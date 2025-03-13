@@ -12,6 +12,10 @@ CREATE TYPE product_type AS ENUM ('color', 'size', 'size_shirt', 'gender');
 CREATE TYPE product_media_type AS ENUM ('photo', 'video');
 -- Cria um tipo enumerado para definir os status possíveis para a mídia de um produto
 CREATE TYPE product_media_status AS ENUM ('uploading', 'uploaded', 'failed');
+-- Cria um tipo enumerado para definir os status possíveis para uma compra
+CREATE TYPE order_status AS ENUM ('paid', 'waiting', 'canceled', 'refunded', 'chargeback', 'missed-delivery' , 'working', 'shiped', 'delivered', 'done');
+-- Cria um tipo enumerado para definir os status possíveis para um pagamento
+CREATE TYPE order_status AS ENUM ('paid', 'waiting', 'canceled', 'refunded', 'chargeback', 'release');
 ------------------------------------------------------------
 -- Tabela de usuários
 ------------------------------------------------------------
@@ -130,8 +134,6 @@ CREATE TABLE product_options (
     name text not null,
     -- Descrição do produto
     description text not null,
-    -- Preço do produto
-    price numeric not null,
     -- Data e hora de criação da opção
     utc_created_on timestamp not null constraint df_product_options_utc_created_on default (now())
 );
@@ -175,13 +177,59 @@ CREATE TABLE customers (
 ------------------------------------------------------------
 -- Tabela para armazenar os pedidos feitos nas lojas
 ------------------------------------------------------------
+CREATE SEQUENCE seq_orders_order_number;
+
 CREATE TABLE orders(
     -- Identificador único do pedido
     id uuid not null constraint pk_orders primary key default (gen_random_uuid()),
+    -- Notas adicionais sobre o pedido
+    notes text,
+    shipment_address jsonb not null,
+    -- Status do pedido
+    status order_status not null constraint df_orders_status default ('waiting'),
+    -- Número do pedido (deve ser único)
+    order_number int not null constraint uq_orders_order_number unique default nextval('seq_orders_order_number'),
     -- Loja à qual o pedido pertence
     store_id uuid not null constraint fk_orders_store references stores(id),
     -- Cliente que fez o pedido
     customer_id uuid not null constraint fk_orders_customer references customers(id),
+    -- Geteway de pagamento escolhido pelo cliente
+    payment_gateway_id uuid not null constraint fk_orders_payment_gateway references store_payment_gateway(id),
+    -- Opção de envio escolhida pelo cliente
+    shipment_option_id uuid not null constraint fk_orders_shipment_option references store_shipment_options(id),
     -- Data e hora de criação do pedido
     utc_created_on timestamp not null constraint df_orders_utc_created_on default (now())
+);
+ALTER SEQUENCE seq_orders_order_number owned by orders.order_number;
+
+CREATE TABLE order_product(
+    -- Quantidade do produto no pedido
+    order_id uuid not null constraint fk_order_product_order references orders(id),
+    -- Referência ao pedido
+    product_id uuid not null constraint fk_order_product_product references products(id),
+    -- Referência ao produto
+    product_options_id uuid not null constraint fk_order_product_product_options references product_options(id),
+
+    quantity int not null,
+    price numeric not null,
+    price_total numeric not null,
+
+    -- Chave primária composta
+    constraint pk_order_product primary key (order_id, product_id, product_options_id)
+);
+
+CREATE TABLE payments (
+    -- Identificador único do pagamento
+    id uuid not null constraint pk_payments primary key default (gen_random_uuid()),
+    -- Valores pagos na compra
+    price numeric not null,
+    price_total numeric not null,
+    -- Referência ao pedido
+    order_id uuid not null constraint fk_payments_order references orders(id),
+    -- Referência ao gateway de pagamento
+    payment_gateway_id uuid not null constraint fk_payments_payment_gateway references store_payment_gateway(id),
+    -- Status do pagamento
+    status payment_status not null constraint df_payments_status default ('waiting'),
+    -- Data e hora de criação do pagamento
+    utc_created_on timestamp not null constraint df_payments_utc_created_on default (now())
 );
