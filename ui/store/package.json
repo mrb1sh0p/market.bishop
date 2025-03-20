@@ -8,8 +8,8 @@
     "#core/*": "../node/core/*"
   },
   "scripts": {
-    "tailwind-dev": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./public/src/css/tailwind.css -o ./public/dist/tailwind.css --watch --config ./tailwind.config.js",
-    "tailwind-build": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./public/src/css/tailwind.css -o ./public/dist/tailwind.css --minify --config ./tailwind.config.js",
+    "tailwind-dev": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./public/src/css/tailwind.css -o ./public/dist/tailwind.css --watch --config ./tailwind.config.mjs",
+    "tailwind-build": "node ./node_modules/@tailwindcss/cli/dist/index.mjs -i ./public/src/css/tailwind.css -o ./public/dist/tailwind.css --minify --config ./tailwind.config.mjs",
     "lint": "DEBUG:eslint:cli-engine ./node_modules/eslint/bin/eslint.js --config .eslintrc.mjs ./**/*.mjs --debug",
     "lint:fix": "DEBUG:eslint:cli-engine ./node_modules/eslint/bin/eslint.js --config .eslintrc.mjs --fix ./**/*.mjs --debug"
   },
