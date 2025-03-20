@@ -1,0 +1,32 @@
+{
+  "name": "marketplace-store",
+  "type": "module",
+  "version": "0.0.1",
+  "main": "app.js",
+  "imports": {
+    "#root/*": "./*",
+    "#core/*": "../node/core/*"
+  },
+  "scripts": {
+    "tailwind-dev": "./node_modules/tailwindcss/lib/cli.js -i ./http/public/src/css/tailwind.css -o ./public/dist/tailwind.css --watch --config ./tailwind.config.js",
+    "tailwind-build": "./node_modules/tailwindcss/lib/cli.js -i ./http/public/src/css/tailwind.css -o ./public/dist/tailwind.css --minify --config ./tailwind.config.js",
+    "lint": "DEBUG:eslint:cli-engine ./node_modules/eslint/bin/eslint.js --config .eslintrc.mjs ./**/*.mjs --debug",
+    "lint:fix": "DEBUG:eslint:cli-engine ./node_modules/eslint/bin/eslint.js --config .eslintrc.mjs --fix ./**/*.mjs --debug"
+  },
+  "keywords": [],
+  "author": "João Gustavo Soares Bispo",
+  "license": "unlicensed",
+  "description": "Store UI",
+  "devDependencies": {
+    "eslint": "^9.22.0",
+    "tailwindcss": "^4.0.14"
+  },
+  "dependencies": {
+    "argument-validator": "^0.1.0",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "knex": "^3.1.0",
+    "pg": "^8.14.1"
+  }
+}
