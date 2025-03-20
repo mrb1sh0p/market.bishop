@@ -10,13 +10,14 @@
     "#api/*": "./apps/api/*"
   },
   "scripts": {
-    "test": ""
+    "knex": "node ./node_modules/knex/bin/cli.js --knexfile core/knexfile.js --migrations-directory ../migrations"
   },
   "keywords": [],
   "author": "João Gustavo Soares Bispo",
   "license": "unlicensed",
   "description": "NodeJs apps to make ecommerce",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "knex": "^3.1.0",
     "pg": "^8.14.0"
